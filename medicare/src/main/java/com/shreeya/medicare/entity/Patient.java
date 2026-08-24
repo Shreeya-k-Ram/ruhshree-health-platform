@@ -1,11 +1,7 @@
 package com.shreeya.medicare.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import jakarta.validation.constraints.*;
 
@@ -44,6 +40,10 @@ public class Patient {
     @OneToMany(mappedBy = "patient")
     @JsonManagedReference
     private List<Appointment> appointment;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 
     public Patient() {
     }
@@ -130,6 +130,14 @@ public class Patient {
     //Setter
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

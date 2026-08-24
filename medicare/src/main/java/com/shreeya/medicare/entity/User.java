@@ -18,6 +18,9 @@ public class User {
 
     private String email;
 
+    @OneToOne(mappedBy = "user")
+    private Patient patient;
+
     public User() {
     }
 
@@ -59,5 +62,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Patient getPatient() {
+        return patient;
+    }
+
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 }

@@ -4,7 +4,9 @@ import java.util.*;
 import com.shreeya.medicare.dto.PatientRequestDTO;
 import com.shreeya.medicare.dto.PatientResponseDTO;
 import com.shreeya.medicare.entity.Patient;
+import com.shreeya.medicare.entity.User;
 import com.shreeya.medicare.repository.PatientRepository;
+import com.shreeya.medicare.repository.UserRepository;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class PatientService {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Save Patient
     public Patient savePatient(Patient patient) {
@@ -43,6 +48,33 @@ public class PatientService {
         if (patient == null || !patient.isActive()) {
             return null;
         }
+        return convertToDTO(patient);
+    }
+
+    public PatientResponseDTO getPatientByUsername(String username) {
+
+        Optional<User> userOptional =
+                userRepository.findByUsername(username);
+
+        if (userOptional.isEmpty()) {
+            return null;
+        }
+
+        User user = userOptional.get();
+
+        Optional<Patient> patientOptional =
+                patientRepository.findByEmail(user.getEmail());
+
+        if (patientOptional.isEmpty()) {
+            return null;
+        }
+
+        Patient patient = patientOptional.get();
+
+        if (!patient.isActive()) {
+            return null;
+        }
+
         return convertToDTO(patient);
     }
 

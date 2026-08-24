@@ -4,6 +4,8 @@ import com.shreeya.medicare.entity.Doctor;
 import com.shreeya.medicare.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +30,22 @@ public class DoctorController {
     @GetMapping
     public ResponseEntity<List<Doctor>> getAllDoctors() {
         return ResponseEntity.ok(doctorService.getAllDoctors());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Doctor> getMyProfile() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String username = authentication.getName();
+
+        Doctor doctor = doctorService.getDoctorByUsername(username);
+
+        if (doctor == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(doctor);
     }
 
     @GetMapping("/{id}")

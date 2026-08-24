@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./Patient.css";
 import { API_BASE_URL } from "../services/api";
 
 function Patient() {
-
-    const navigate = useNavigate();
 
     const [patient, setPatient] = useState(null);
     const [appointments, setAppointments] = useState([]);
@@ -13,126 +10,136 @@ function Patient() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    // Temporary patient ID for testing
-    const patientId = 3;
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
+        fetchPatientData();
+    }, []);
 
-        const fetchData = async () => {
+    const fetchPatientData = async () => {
 
-            const token = localStorage.getItem("token");
+        if (!token) {
+            setError("Please login first.");
+            setLoading(false);
+            return;
+        }
 
-            if (!token) {
-                setError("Please login first.");
-                setLoading(false);
-                return;
+        try {
+
+            setLoading(true);
+            setError("");
+
+            // Get logged-in patient's profile
+            const patientResponse = await fetch(
+                `${API_BASE_URL}/patients/me`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!patientResponse.ok) {
+                throw new Error(
+                    `Unable to load patient profile: ${patientResponse.status}`
+                );
             }
 
-            try {
-                const patientResponse = await fetch(
-                    `${API_BASE_URL}/patients/${patientId}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        }
-                    }
-                );
+            const patientData =
+                await patientResponse.json();
 
-                if (!patientResponse.ok) {
-                    throw new Error(
-                        `Failed to load patient: ${patientResponse.status}`
-                    );
+            setPatient(patientData);
+
+            // Get patient's appointments
+            const appointmentResponse = await fetch(
+                `${API_BASE_URL}/appointments/patient/${patientData.id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 }
+            );
 
-                const patientData = await patientResponse.json();
-
-                setPatient(patientData);
-
-                const appointmentResponse = await fetch(
-                    `${API_BASE_URL}/appointments/patient/${patientId}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            "Content-Type": "application/json"
-                        }
-                    }
-                );
-
-                if (!appointmentResponse.ok) {
-                    throw new Error(
-                        `Failed to load appointments: ${appointmentResponse.status}`
-                    );
-                }
+            if (appointmentResponse.ok) {
 
                 const appointmentData =
                     await appointmentResponse.json();
 
-                console.log(
-                    "Patient appointments:",
-                    appointmentData
-                );
-
                 setAppointments(appointmentData);
 
-            } catch (error) {
-
-                console.error(error);
-
-                setError(error.message);
-
-            } finally {
-
-                setLoading(false);
+            } else {
+                setAppointments([]);
 
             }
-        };
 
-        fetchData();
+        } catch (err) {
 
-    }, []);
+            console.error(err);
+            setError(err.message);
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    };
+
 
     if (loading) {
 
         return (
-            <div className="patient-page">
+            <div className="patient-loading">
 
-                <div className="patient-loading">
+                <div className="patient-loading-spinner"></div>
 
-                    <div className="patient-loading-spinner"></div>
+                <h3>
+                    Loading your profile
+                </h3>
 
-                    <p>
-                        Loading your profile...
-                    </p>
-
-                </div>
+                <p>
+                    Please wait while we fetch your information...
+                </p>
 
             </div>
         );
+
     }
+
 
     if (error) {
 
         return (
-            <div className="patient-page">
+            <div className="patient-error">
 
-                <div className="patient-error">
-
-                    <h2>
-                        Unable to load your profile
-                    </h2>
-
-                    <p>
-                        {error}
-                    </p>
-
+                <div className="patient-error-icon">
+                    !
                 </div>
+
+                <h2>
+                    Unable to load your profile
+                </h2>
+
+                <p>
+                    {error}
+                </p>
+
+                <button
+                    className="patient-retry-button"
+                    onClick={fetchPatientData}
+                >
+                    Try Again
+                </button>
 
             </div>
         );
+
     }
+
+
+    if (!patient) {
+        return null;
+    }
+
 
     return (
 
@@ -140,7 +147,9 @@ function Patient() {
 
             <div className="patient-container">
 
-                <div className="patient-header">
+                {/* HEADER */}
+
+                <header className="patient-header">
 
                     <div>
 
@@ -149,136 +158,92 @@ function Patient() {
                         </p>
 
                         <h1>
-                            Patient Dashboard
+                            Welcome back, {patient.name} 👋
                         </h1>
 
                         <p className="patient-subtitle">
-                            Manage your healthcare journey in one place.
+                            Manage your health information and appointments
+                            from one place.
                         </p>
 
                     </div>
 
-
                     <div className="patient-avatar">
 
-                        {patient?.name
-                            ? patient.name
-                                .charAt(0)
-                                .toUpperCase()
+                        {patient.name
+                            ? patient.name.charAt(0).toUpperCase()
                             : "P"
                         }
 
                     </div>
 
-                </div>
+                </header>
+
+
+                {/* PROFILE */}
 
                 <section className="patient-section">
 
                     <div className="patient-section-heading">
 
-                        <div>
+                        <p className="patient-section-label">
+                            PERSONAL INFORMATION
+                        </p>
 
-                            <p className="patient-section-label">
-                                YOUR INFORMATION
-                            </p>
+                        <h2>
+                            Your Profile
+                        </h2>
 
-                            <h2>
-                                Patient Profile
-                            </h2>
-
-                            <p>
-                                Your personal and healthcare information.
-                            </p>
-
-                        </div>
+                        <p>
+                            Your registered healthcare information.
+                        </p>
 
                     </div>
 
 
-                    {patient && (
+                    <div className="patient-profile-card">
 
-                        <div className="patient-profile-card">
-
-                            <div className="patient-profile-item">
-
-                                <span>
-                                    Name
-                                </span>
-
-                                <strong>
-                                    {patient.name || "--"}
-                                </strong>
-
-                            </div>
-
-
-                            <div className="patient-profile-item">
-
-                                <span>
-                                    Age
-                                </span>
-
-                                <strong>
-                                    {patient.age ?? "--"}
-                                </strong>
-
-                            </div>
-
-
-                            <div className="patient-profile-item">
-
-                                <span>
-                                    Gender
-                                </span>
-
-                                <strong>
-                                    {patient.gender || "--"}
-                                </strong>
-
-                            </div>
-
-
-                            <div className="patient-profile-item">
-
-                                <span>
-                                    Phone
-                                </span>
-
-                                <strong>
-                                    {patient.phone || "--"}
-                                </strong>
-
-                            </div>
-
-
-                            <div className="patient-profile-item">
-
-                                <span>
-                                    Email
-                                </span>
-
-                                <strong>
-                                    {patient.email || "--"}
-                                </strong>
-
-                            </div>
-
-
-                            <div className="patient-profile-item">
-
-                                <span>
-                                    Address
-                                </span>
-
-                                <strong>
-                                    {patient.address || "--"}
-                                </strong>
-
-                            </div>
-
+                        <div className="patient-profile-item">
+                            <span>FULL NAME</span>
+                            <strong>{patient.name}</strong>
                         </div>
 
-                    )}
+                        <div className="patient-profile-item">
+                            <span>PATIENT ID</span>
+                            <strong>#{patient.id}</strong>
+                        </div>
+
+                        <div className="patient-profile-item">
+                            <span>AGE</span>
+                            <strong>{patient.age} years</strong>
+                        </div>
+
+                        <div className="patient-profile-item">
+                            <span>GENDER</span>
+                            <strong>{patient.gender}</strong>
+                        </div>
+
+                        <div className="patient-profile-item">
+                            <span>PHONE</span>
+                            <strong>{patient.phone}</strong>
+                        </div>
+
+                        <div className="patient-profile-item">
+                            <span>EMAIL</span>
+                            <strong>{patient.email}</strong>
+                        </div>
+
+                        <div className="patient-profile-item">
+                            <span>ADDRESS</span>
+                            <strong>{patient.address}</strong>
+                        </div>
+
+                        <div className="patient-profile-item">
+                            <span>HEALTH CONDITION</span>
+                            <strong>{patient.disease}</strong>
+                        </div>
+
+                    </div>
 
                 </section>
 
@@ -293,30 +258,25 @@ function Patient() {
                             </p>
 
                             <h2>
-                                Need another appointment?
+                                Need medical assistance?
                             </h2>
 
                             <p>
-                                Find a doctor and schedule your next
-                                appointment with ease.
+                                Book an appointment with one of our
+                                healthcare professionals.
                             </p>
 
                         </div>
 
-
                         <button
                             className="book-appointment-button"
                             onClick={() =>
-                                navigate("/appointments/book")
+                                window.location.href =
+                                    "/appointments/book"
                             }
                         >
-
-                            Book another appointment
-
-                            <span>
-                                →
-                            </span>
-
+                            Book Appointment
+                            <span>→</span>
                         </button>
 
                     </div>
@@ -327,22 +287,17 @@ function Patient() {
 
                     <div className="patient-section-heading">
 
-                        <div>
+                        <p className="patient-section-label">
+                            YOUR CARE
+                        </p>
 
-                            <p className="patient-section-label">
-                                YOUR CARE
-                            </p>
+                        <h2>
+                            My Appointments
+                        </h2>
 
-                            <h2>
-                                My Appointments
-                            </h2>
-
-                            <p>
-                                View your appointments and their
-                                current status.
-                            </p>
-
-                        </div>
+                        <p>
+                            View your upcoming and previous appointments.
+                        </p>
 
                     </div>
 
@@ -352,7 +307,7 @@ function Patient() {
                         <div className="patient-empty-card">
 
                             <div className="patient-empty-icon">
-                                ♡
+                                📅
                             </div>
 
                             <h3>
@@ -360,17 +315,17 @@ function Patient() {
                             </h3>
 
                             <p>
-                                Book your first appointment to
-                                see it here.
+                                You don't have any appointments scheduled.
                             </p>
 
                             <button
                                 className="empty-book-button"
                                 onClick={() =>
-                                    navigate("/appointments/book")
+                                    window.location.href =
+                                        "/appointments/book"
                                 }
                             >
-                                Book an appointment →
+                                Book Your First Appointment
                             </button>
 
                         </div>
@@ -380,87 +335,97 @@ function Patient() {
                         <div className="appointments-list">
 
                             {appointments.map(
-                                (appointment) => (
+                                (appointment) => {
 
-                                    <div
-                                        className="appointment-card"
-                                        key={appointment.id}
-                                    >
+                                    const status =
+                                        appointment.status ||
+                                        "BOOKED";
 
-                                        <div className="appointment-doctor">
+                                    return (
 
-                                            <div className="appointment-doctor-avatar">
+                                        <div
+                                            className="appointment-card"
+                                            key={appointment.id}
+                                        >
 
-                                                {appointment.doctorName
-                                                    ? appointment.doctorName
-                                                        .charAt(0)
-                                                        .toUpperCase()
-                                                    : "D"
-                                                }
+                                            <div className="appointment-doctor">
+
+                                                <div className="appointment-doctor-avatar">
+                                                    👨‍⚕️
+                                                </div>
+
+                                                <div>
+
+                                                    <h3>
+                                                        {appointment.doctor?.name ||
+                                                            appointment.doctorName ||
+                                                            "Doctor"
+                                                        }
+                                                    </h3>
+
+                                                    <p>
+                                                        {appointment.doctor?.specialization ||
+                                                            appointment.specialization ||
+                                                            "Healthcare Professional"
+                                                        }
+                                                    </p>
+
+                                                </div>
 
                                             </div>
 
 
-                                            <div>
+                                            <div className="appointment-info">
 
-                                                <h3>
-                                                    Dr. {appointment.doctorName}
-                                                </h3>
+                                                <span>
+                                                    DATE
+                                                </span>
 
-                                                <p>
-                                                    Medical Specialist
-                                                </p>
+                                                <strong>
+                                                    {appointment.date ||
+                                                        appointment.appointmentDate ||
+                                                        "Not available"
+                                                    }
+                                                </strong>
+
+                                            </div>
+
+
+                                            <div className="appointment-info">
+
+                                                <span>
+                                                    TIME
+                                                </span>
+
+                                                <strong>
+                                                    {appointment.time ||
+                                                        appointment.appointmentTime ||
+                                                        "Not available"
+                                                    }
+                                                </strong>
+
+                                            </div>
+
+
+                                            <div className="appointment-status-container">
+
+                                                <span>
+                                                    STATUS
+                                                </span>
+
+                                                <span
+                                                    className={`appointment-status ${status.toLowerCase()}`}
+                                                >
+                                                    {status}
+                                                </span>
 
                                             </div>
 
                                         </div>
 
-                                        <div className="appointment-info">
+                                    );
 
-                                            <span>
-                                                DATE
-                                            </span>
-
-                                            <strong>
-                                                {appointment.appointmentDate}
-                                            </strong>
-
-                                        </div>
-
-                                        <div className="appointment-info">
-
-                                            <span>
-                                                TIME
-                                            </span>
-
-                                            <strong>
-                                                {appointment.appointmentTime}
-                                            </strong>
-
-                                        </div>
-
-                                        <div className="appointment-status-container">
-
-                                            <span>
-                                                STATUS
-                                            </span>
-
-                                            <span
-                                                className={`appointment-status ${
-                                                    appointment.status
-                                                        ?.toLowerCase()
-                                                }`}
-                                            >
-
-                                                {appointment.status}
-
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-                                )
+                                }
                             )}
 
                         </div>
@@ -468,7 +433,6 @@ function Patient() {
                     )}
 
                 </section>
-
 
             </div>
 
