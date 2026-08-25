@@ -1,5 +1,6 @@
 package com.shreeya.medicare.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,6 +20,7 @@ public class User {
     private String email;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore
     private Patient patient;
 
     public User() {
