@@ -158,7 +158,7 @@ function Patient() {
                         </p>
 
                         <h1>
-                            Welcome back, {patient.name} 👋
+                            Welcome, {patient.name} 👋
                         </h1>
 
                         <p className="patient-subtitle">
@@ -178,9 +178,6 @@ function Patient() {
                     </div>
 
                 </header>
-
-
-                {/* PROFILE */}
 
                 <section className="patient-section">
 
@@ -236,11 +233,6 @@ function Patient() {
                         <div className="patient-profile-item">
                             <span>ADDRESS</span>
                             <strong>{patient.address}</strong>
-                        </div>
-
-                        <div className="patient-profile-item">
-                            <span>HEALTH CONDITION</span>
-                            <strong>{patient.disease}</strong>
                         </div>
 
                     </div>
