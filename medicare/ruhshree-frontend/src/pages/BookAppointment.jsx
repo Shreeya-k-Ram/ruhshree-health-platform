@@ -107,6 +107,11 @@ function BookAppointment() {
             return;
         }
 
+        if (!patientId) {
+            setError("Patient profile could not be loaded.");
+            return;
+        }
+
         setBooking(true);
         setError("");
         setSuccess("");

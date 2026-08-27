@@ -39,7 +39,7 @@ public class Patient {
     private String disease;
 
     @OneToMany(mappedBy = "patient")
-    @JsonManagedReference
+    @JsonManagedReference("patient-appointments")
     private List<Appointment> appointment;
 
     @OneToOne

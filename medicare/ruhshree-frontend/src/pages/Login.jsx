@@ -25,7 +25,21 @@ function Login() {
             localStorage.setItem("token", data.token);
 
             alert("Login successful!");
-            navigate("/");
+
+            const payload = JSON.parse(atob(data.token.split(".")[1]));
+
+            if (payload.role === "PATIENT") {
+                navigate("/patient");
+            }
+            else if (payload.role === "DOCTOR") {
+                navigate("/doctor");
+            }
+            else if (payload.role === "ADMIN") {
+                navigate("/admin");
+            }
+            else {
+                navigate("/");
+            }
 
         } catch (error) {
             console.error(error);

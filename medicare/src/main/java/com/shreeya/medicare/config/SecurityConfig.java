@@ -42,13 +42,16 @@ public class SecurityConfig {
 
                         .requestMatchers("/users/admin/**").hasRole("ADMIN")
 
+                        .requestMatchers("/patients/me").hasRole("PATIENT")
+                        .requestMatchers("/doctors/me").hasRole("DOCTOR")
+
+                        .requestMatchers(HttpMethod.GET, "/patients/**").permitAll()
+
                         .requestMatchers(HttpMethod.PUT, "/appointments/*/approve")
                         .hasAnyRole("ADMIN", "DOCTOR")
 
                         .requestMatchers(HttpMethod.PUT, "/appointments/*/cancel")
                         .hasAnyRole("DOCTOR")
-
-                        .requestMatchers(HttpMethod.GET, "/patients/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

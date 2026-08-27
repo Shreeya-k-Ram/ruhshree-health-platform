@@ -21,12 +21,12 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonBackReference
+    @JsonBackReference("patient-appointments")
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
-    @JsonBackReference
+    @JsonBackReference("doctor-appointments")
     @ManyToOne
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;

@@ -4,7 +4,6 @@ import java.util.*;
 import com.shreeya.medicare.dto.PatientRequestDTO;
 import com.shreeya.medicare.dto.PatientResponseDTO;
 import com.shreeya.medicare.entity.Patient;
-import com.shreeya.medicare.entity.User;
 import com.shreeya.medicare.repository.PatientRepository;
 import com.shreeya.medicare.repository.UserRepository;
 import org.slf4j.LoggerFactory;
@@ -53,32 +52,19 @@ public class PatientService {
 
     public PatientResponseDTO getPatientByUsername(String username) {
 
-        Optional<User> userOptional =
-                userRepository.findByUsername(username);
-
-        if (userOptional.isEmpty()) {
-            return null;
-        }
-
-        User user = userOptional.get();
-
-        Optional<Patient> patientOptional =
-                patientRepository.findByEmail(user.getEmail());
+        Optional<Patient> patientOptional = patientRepository.findByUserUsername(username);
 
         if (patientOptional.isEmpty()) {
             return null;
         }
-
         Patient patient = patientOptional.get();
 
         if (!patient.isActive()) {
             return null;
         }
-
         return convertToDTO(patient);
     }
 
-    // Update Patient
     public PatientResponseDTO updatePatient(Long id, PatientRequestDTO patientRequestDTO) {
 
         logger.info("Updating patient with ID: {}", id);
