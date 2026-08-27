@@ -13,6 +13,14 @@ function Register() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    // Patient information
+    const [name, setName] = useState("");
+    const [age, setAge] = useState("");
+    const [gender, setGender] = useState("");
+    const [phone, setPhone] = useState("");
+    const [address, setAddress] = useState("");
+    const [disease, setDisease] = useState("");
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -22,7 +30,6 @@ function Register() {
 
         setError("");
 
-        // Check passwords
         if (password !== confirmPassword) {
             setError("Passwords do not match.");
             return;
@@ -45,7 +52,17 @@ function Register() {
                         username: username,
                         email: email,
                         password: password,
-                        role: "PATIENT"
+                        role: "PATIENT",
+
+                        patient: {
+                            name: name,
+                            age: Number(age),
+                            gender: gender,
+                            phone: phone,
+                            email: email,
+                            address: address,
+                            disease: disease
+                        }
                     })
                 }
             );
@@ -65,7 +82,6 @@ function Register() {
 
             alert("Account created successfully!");
 
-            // Go to Login page
             navigate("/login");
 
         } catch (error) {
@@ -79,6 +95,7 @@ function Register() {
         } finally {
 
             setLoading(false);
+
         }
     };
 
@@ -86,6 +103,7 @@ function Register() {
         <div className="register-page">
 
             <div className="register-card">
+
                 <div className="register-content">
 
                     <div className="register-brand">
@@ -100,7 +118,6 @@ function Register() {
                         </div>
 
                     </div>
-
 
                     <div className="register-heading">
 
@@ -123,7 +140,22 @@ function Register() {
 
                     <form onSubmit={handleRegister}>
 
-                        {/* Username */}
+                        <div className="form-group">
+
+                            <label>Full Name</label>
+
+                            <input
+                                type="text"
+                                placeholder="Enter your full name"
+                                value={name}
+                                onChange={(e) =>
+                                    setName(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
                         <div className="form-group">
 
                             <label>Username</label>
@@ -150,6 +182,103 @@ function Register() {
                                 value={email}
                                 onChange={(e) =>
                                     setEmail(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <label>Age</label>
+
+                            <input
+                                type="number"
+                                placeholder="Enter your age"
+                                min="1"
+                                max="100"
+                                value={age}
+                                onChange={(e) =>
+                                    setAge(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <label>Gender</label>
+
+                            <select
+                                value={gender}
+                                onChange={(e) =>
+                                    setGender(e.target.value)
+                                }
+                                required
+                            >
+                                <option value="">
+                                    Select gender
+                                </option>
+
+                                <option value="Male">
+                                    Male
+                                </option>
+
+                                <option value="Female">
+                                    Female
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <label>Phone</label>
+
+                            <input
+                                type="tel"
+                                placeholder="Enter your phone number"
+                                value={phone}
+                                onChange={(e) =>
+                                    setPhone(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <label>Address</label>
+
+                            <input
+                                type="text"
+                                placeholder="Enter your address"
+                                value={address}
+                                onChange={(e) =>
+                                    setAddress(e.target.value)
+                                }
+                                required
+                            />
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <label>Medical Condition</label>
+
+                            <input
+                                type="text"
+                                placeholder="Enter current condition or None"
+                                value={disease}
+                                onChange={(e) =>
+                                    setDisease(e.target.value)
                                 }
                                 required
                             />
@@ -188,7 +317,6 @@ function Register() {
 
                         </div>
 
-
                         {error && (
                             <p className="register-error">
                                 {error}
@@ -212,7 +340,6 @@ function Register() {
 
                     </form>
 
-
                     <p className="register-login">
 
                         Already have an account?
@@ -226,22 +353,18 @@ function Register() {
 
                     </p>
 
-
                     <p className="register-footer">
                         Your care. Your story. Your health.
                     </p>
 
                 </div>
 
-
-                {/* RIGHT SIDE */}
                 <div className="register-image">
 
                     <img
                         src={doctorImage}
                         alt="Doctor providing care"
                     />
-
 
                     <div className="image-overlay-card">
 

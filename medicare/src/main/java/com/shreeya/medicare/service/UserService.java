@@ -1,6 +1,8 @@
 package com.shreeya.medicare.service;
 
 import com.shreeya.medicare.entity.User;
+import com.shreeya.medicare.entity.Patient;
+import com.shreeya.medicare.repository.PatientRepository;
 import com.shreeya.medicare.repository.UserRepository;
 import com.shreeya.medicare.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.shreeya.medicare.dto.LoginRequestDTO;
 import com.shreeya.medicare.dto.LoginResponseDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -17,12 +20,40 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder ;
 
+    @Transactional
     public User registerUser(User user) {
+
+        // Encrypt password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        return userRepository.save(user);
+        // Save User first
+        User savedUser = userRepository.save(user);
+
+        // Automatically create Patient for PATIENT registration
+        if ("PATIENT".equalsIgnoreCase(savedUser.getRole())) {
+
+            Patient patient = new Patient();
+
+            patient.setName(user.getPatient().getName());
+            patient.setAge(user.getPatient().getAge());
+            patient.setGender(user.getPatient().getGender());
+            patient.setPhone(user.getPatient().getPhone());
+            patient.setEmail(savedUser.getEmail());
+            patient.setAddress(user.getPatient().getAddress());
+            patient.setDisease(user.getPatient().getDisease());
+
+            patient.setUser(savedUser);
+            savedUser.setPatient(patient);
+
+            patientRepository.save(patient);
+        }
+
+        return savedUser;
     }
 
     public boolean forgotPassword(String email) {

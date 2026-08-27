@@ -18,19 +18,37 @@ function BookAppointment() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
-    // Temporary patient ID
-    // We will automatically get this from login later.
-    const patientId = 3;
+    const [patientId, setPatientId] = useState(null);
 
     useEffect(() => {
 
-        const fetchDoctors = async () => {
+        const fetchData = async () => {
 
             const token = localStorage.getItem("token");
 
             try {
+                const patientResponse = await fetch(
+                    `${API_BASE_URL}/patients/me`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
 
-                const response = await fetch(
+                if (!patientResponse.ok) {
+                    throw new Error("Failed to load patient profile");
+                }
+
+                const patientData = await patientResponse.json();
+
+                console.log("Logged-in patient:", patientData);
+
+                setPatientId(patientData.id);
+
+
+                // Get doctors
+                const doctorResponse = await fetch(
                     `${API_BASE_URL}/doctors`,
                     {
                         headers: {
@@ -39,13 +57,13 @@ function BookAppointment() {
                     }
                 );
 
-                if (!response.ok) {
+                if (!doctorResponse.ok) {
                     throw new Error("Failed to load doctors");
                 }
 
-                const data = await response.json();
+                const doctorData = await doctorResponse.json();
 
-                setDoctors(data);
+                setDoctors(doctorData);
 
             } catch (error) {
 
@@ -59,7 +77,7 @@ function BookAppointment() {
             }
         };
 
-        fetchDoctors();
+        fetchData();
 
     }, []);
 

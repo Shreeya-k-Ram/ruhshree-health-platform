@@ -15,8 +15,10 @@
     background: #ffffff;
     border-radius: 24px;
     overflow: hidden;
+
     display: grid;
     grid-template-columns: 1fr 0.9fr;
+
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
 }
 
@@ -24,6 +26,7 @@
     padding: 45px 55px;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .register-brand {
@@ -36,11 +39,14 @@
     width: 46px;
     height: 46px;
     border-radius: 12px;
+
     background: #10132f;
     color: #ffffff;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     font-size: 24px;
 }
 
@@ -52,8 +58,10 @@
 
 .register-brand p {
     margin: 3px 0 0;
+
     font-size: 14px;
     color: #777777;
+
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -64,17 +72,22 @@
 
 .register-small-title {
     color: #b99b5f;
+
     font-size: 13px;
     font-weight: 600;
+
     text-transform: uppercase;
     letter-spacing: 2px;
-    margin-bottom: 10px;
+
+    margin: 0 0 10px;
 }
 
 .register-heading h1 {
     font-size: 42px;
     line-height: 1.1;
+
     margin: 0;
+
     color: #10132f;
 }
 
@@ -84,14 +97,18 @@
 
 .register-description {
     color: #777777;
+
     font-size: 15px;
     line-height: 1.6;
+
     margin-top: 15px;
+
     max-width: 430px;
 }
 
 .register-content form {
     margin-top: 28px;
+    width: 100%;
 }
 
 .form-group {
@@ -100,24 +117,38 @@
 
 .form-group label {
     display: block;
+
     font-size: 16px;
     font-weight: 600;
+
     color: #292929;
+
     margin-bottom: 7px;
 }
 
 .form-group input {
     width: 100%;
     height: 48px;
+
     padding: 0 15px;
+
     border: 1px solid #dedbd4;
     border-radius: 10px;
+
     background: #faf9f6;
+
     font-size: 16px;
     color: #222222;
+
     outline: none;
+
     box-sizing: border-box;
+
     transition: 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: #999999;
 }
 
 .form-group input:focus {
@@ -127,24 +158,33 @@
 
 .register-error {
     color: #c0392b;
-    font-size: 16px;
+
+    font-size: 15px;
+
     margin: 5px 0 15px;
 }
 
 .register-button {
     width: 100%;
     height: 52px;
+
     border: none;
     border-radius: 10px;
+
     background: #10132f;
     color: #ffffff;
+
     font-size: 15px;
     font-weight: 600;
+
     cursor: pointer;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     gap: 12px;
+
     transition: 0.2s ease;
 }
 
@@ -163,19 +203,26 @@
 
 .register-login {
     text-align: center;
+
     font-size: 16px;
     color: #777777;
+
     margin-top: 20px;
 }
 
 .register-login button {
     border: none;
     background: none;
+
     color: #10132f;
+
     font-weight: 600;
+
     cursor: pointer;
+
     margin-left: 5px;
     padding: 0;
+
     font-size: 16px;
 }
 
@@ -186,35 +233,45 @@
 .register-footer {
     margin-top: auto;
     padding-top: 25px;
+
     color: #999999;
+
     font-size: 16px;
 }
 
 .register-image {
     position: relative;
+
     min-height: 700px;
+
     overflow: hidden;
 }
 
 .register-image img {
     width: 100%;
     height: 100%;
+
     object-fit: cover;
+
     display: block;
 }
 
 .image-overlay-card {
     position: absolute;
+
     left: 25px;
     right: 25px;
     bottom: 25px;
 
     background: rgba(255, 255, 255, 0.94);
+
     border-radius: 14px;
+
     padding: 18px;
 
     display: flex;
     align-items: center;
+
     gap: 14px;
 
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
@@ -223,7 +280,11 @@
 .image-overlay-card > span {
     width: 40px;
     height: 40px;
+
+    flex-shrink: 0;
+
     border-radius: 10px;
+
     background: #10132f;
     color: white;
 
@@ -241,17 +302,41 @@
 
 .image-overlay-card p {
     margin: 4px 0 0;
+
     color: #777777;
+
     font-size: 12px;
+}
+
+@media (max-width: 900px) {
+
+    .register-page {
+        padding: 25px;
+    }
+
+    .register-card {
+        grid-template-columns: 1fr;
+        max-width: 650px;
+    }
+
+    .register-image {
+        display: none;
+    }
+
+    .register-content {
+        padding: 45px;
+    }
 }
 
 @media (max-width: 500px) {
 
     .register-page {
         padding: 10px;
+        align-items: flex-start;
     }
 
     .register-card {
+        min-height: auto;
         border-radius: 16px;
     }
 
@@ -265,5 +350,31 @@
 
     .register-heading h1 {
         font-size: 32px;
+    }
+
+    .register-description {
+        font-size: 14px;
+    }
+
+    .form-group label {
+        font-size: 15px;
+    }
+
+    .form-group input {
+        height: 46px;
+        font-size: 15px;
+    }
+
+    .register-button {
+        height: 50px;
+    }
+
+    .register-login {
+        font-size: 14px;
+    }
+
+    .register-footer {
+        font-size: 14px;
+        text-align: center;
     }
 }
