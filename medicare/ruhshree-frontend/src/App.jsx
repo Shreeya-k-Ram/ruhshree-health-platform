@@ -21,6 +21,7 @@ import Patient from "./pages/Patient";
 import Doctor from "./pages/Doctor";
 import Clinic from "./pages/Clinic.jsx";
 import Admin from "./pages/Admin.jsx";
+import AccessDenied from "./pages/AccessDenied";
 
 
 function Home() {
@@ -54,6 +55,7 @@ function App() {
             <Route path="/doctor" element={<Doctor />} />
             <Route path="/clinic" element={<Clinic />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/access-denied" element={<AccessDenied />} />
 
         </Routes>
     );

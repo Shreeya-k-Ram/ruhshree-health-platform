@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Doctor.css";
 import { API_BASE_URL } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Doctor() {
 
@@ -11,6 +12,8 @@ function Doctor() {
     const [error, setError] = useState("");
 
     const token = localStorage.getItem("token");
+
+    const navigate = useNavigate();
 
     const fetchDoctorData = async () => {
 
@@ -38,6 +41,15 @@ function Doctor() {
             );
 
             if (!doctorResponse.ok) {
+                if (
+                    doctorResponse.status === 401 ||
+                    doctorResponse.status === 403 ||
+                    doctorResponse.status === 404
+                ) {
+                    navigate("/access-denied");
+                    return;
+                }
+
                 throw new Error(
                     `Unable to load doctor profile: ${doctorResponse.status}`
                 );
@@ -99,12 +111,6 @@ function Doctor() {
                     }
                 }
             );
-
-            if (!response.ok) {
-                throw new Error(
-                    `Approval failed: ${response.status}`
-                );
-            }
 
             const updatedAppointment =
                 await response.json();
@@ -271,7 +277,12 @@ function Doctor() {
                         </span>
 
                         <h1>
-                            Welcome back, Dr. {cleanDoctorName} 👋
+                            Welcome, Dr. {cleanDoctorName}
+                            <img
+                                 src="/doc.jpg"
+                                 alt="Doctor"
+                                 className="doctor-welcome-emoji"
+                            />
                         </h1>
 
                         <p>
@@ -291,9 +302,6 @@ function Doctor() {
                     </div>
 
                 </header>
-
-
-                {/* STATS */}
 
                 <section className="doctor-stats">
 
@@ -382,9 +390,6 @@ function Doctor() {
 
                 </section>
 
-
-                {/* PROFILE */}
-
                 <section className="doctor-section">
 
                     <div className="doctor-section-heading">
@@ -440,11 +445,9 @@ function Doctor() {
 
                         </div>
 
-
                         <div className="doctor-profile-details">
 
                             <div className="doctor-detail">
-
                                 <span>
                                     EXPERIENCE
                                 </span>
@@ -455,9 +458,7 @@ function Doctor() {
 
                             </div>
 
-
                             <div className="doctor-detail">
-
                                 <span>
                                     EMAIL
                                 </span>
@@ -470,7 +471,6 @@ function Doctor() {
 
 
                             <div className="doctor-detail">
-
                                 <span>
                                     PHONE
                                 </span>
@@ -478,6 +478,33 @@ function Doctor() {
                                 <strong>
                                     {doctor.phone || "--"}
                                 </strong>
+
+                            </div>
+
+
+                            <div className="doctor-detail">
+                                <span>
+                                    ADDRESS
+                                </span>
+
+                                <strong>
+                                    {doctor.address || "--"}
+                                </strong>
+
+                            </div>
+
+                            <div className="doctor-detail doctor-rating">
+                                <span>
+                                    PATIENT RATING
+                                </span>
+
+                                <strong>
+                                    ⭐ 4.8 / 5.0
+                                </strong>
+
+                                <small>
+                                    Highly rated by patients
+                                </small>
 
                             </div>
 

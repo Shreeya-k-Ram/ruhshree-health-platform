@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Patient.css";
 import { API_BASE_URL } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Patient() {
 
@@ -11,6 +12,7 @@ function Patient() {
     const [error, setError] = useState("");
 
     const token = localStorage.getItem("token");
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchPatientData();
@@ -40,13 +42,23 @@ function Patient() {
             );
 
             if (!patientResponse.ok) {
+
+
+                if (
+                    patientResponse.status === 401 ||
+                    patientResponse.status === 403 ||
+                    patientResponse.status === 404) {
+
+                    navigate("/access-denied");
+                    return;
+                }
+
                 throw new Error(
                     `Unable to load patient profile: ${patientResponse.status}`
                 );
             }
 
-            const patientData =
-                await patientResponse.json();
+            const patientData = await patientResponse.json();
 
             setPatient(patientData);
 
@@ -83,7 +95,6 @@ function Patient() {
 
         }
     };
-
 
     if (loading) {
 
